@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
-import router from './Router';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
+import router from './Router';
+import Loading from './components/Loading';
 
 const GlobalStyle = createGlobalStyle`
 	${reset}
@@ -9,7 +11,7 @@ const GlobalStyle = createGlobalStyle`
 	* {
     box-sizing: border-box;
   }
-	
+
   body {
     background-color: black;
     color:white;
@@ -18,10 +20,22 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
+	const [isLoading, setIsLoading] = useState(true);
+	const init = async () => {
+		// TODO: add firebase auth
+		setTimeout(() => {
+			setIsLoading(false);
+		}, 1000);
+	};
+
+	useEffect(() => {
+		init();
+	}, []);
+
 	return (
 		<>
 			<GlobalStyle />
-			<RouterProvider router={router} />
+			{isLoading ? <Loading /> : <RouterProvider router={router} />}
 		</>
 	);
 }
