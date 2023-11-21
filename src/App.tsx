@@ -4,6 +4,7 @@ import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import router from './Router';
 import Loading from './components/Loading';
+import { auth } from './firebase';
 
 const GlobalStyle = createGlobalStyle`
 	${reset}
@@ -22,10 +23,8 @@ const GlobalStyle = createGlobalStyle`
 function App() {
 	const [isLoading, setIsLoading] = useState(true);
 	const init = async () => {
-		// TODO: add firebase auth
-		setTimeout(() => {
-			setIsLoading(false);
-		}, 1000);
+		await auth.authStateReady().catch(console.error);
+		setIsLoading(false);
 	};
 
 	useEffect(() => {
