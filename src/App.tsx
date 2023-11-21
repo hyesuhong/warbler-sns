@@ -16,7 +16,15 @@ const GlobalStyle = createGlobalStyle`
   body {
     background-color: black;
     color:white;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:'Raleway', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		height: 100vh;
+		min-height: 100vh;
+
+		& > div {
+			display: flex;
+			justify-content: center;
+			height: 100%;
+		}
   }
 `;
 
