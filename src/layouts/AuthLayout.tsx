@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FirebaseError } from 'firebase/app';
-import { Auth, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useAuth } from '../contexts/AuthContext';
 import Title from '../components/Title';
 import InputField from '../components/InputField';
 import ErrorMessage from '../components/ErrorMessage';
-import { errorMsg } from '../constants/message';
-import { auth } from '../firebase';
 import Button from '../components/Button';
 import GithubMark from '../assets/github-mark.svg';
 
@@ -71,7 +68,6 @@ type InitialInput = { name: string; type: string; initial: string };
 interface Props {
 	type: 'LOGIN' | 'JOIN';
 	inputs: InitialInput[];
-	submitEvent: (auth: Auth, values: Obj) => Promise<void>;
 	switcher: {
 		forwardText: string;
 		target: {
@@ -81,18 +77,21 @@ interface Props {
 	};
 }
 
-const AuthLayout = ({ type, inputs, submitEvent, switcher }: Props) => {
+const AuthLayout = ({ type, inputs, switcher }: Props) => {
 	const navigate = useNavigate();
-	const [isLoading, setIsLoading] = useState(false);
+	const { join, loginWithEmail, loginWithSocial, isLoading, error } = useAuth();
 	const [values, setValues] = useState<Obj>(
 		inputs.reduce<Obj>((acc, input) => {
 			acc[input.name] = input.initial;
 			return acc;
 		}, {})
 	);
-	const [error, setError] = useState('');
 
 	const pageTitle = type[0] + type.slice(1).toLowerCase();
+
+	const authSuccessCallback = () => {
+		navigate('/');
+	};
 
 	const onInputChagne = (ev: React.ChangeEvent<HTMLInputElement>) => {
 		const {
@@ -109,53 +108,28 @@ const AuthLayout = ({ type, inputs, submitEvent, switcher }: Props) => {
 	const onSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
 		ev.preventDefault();
 
-		setError('');
-
 		const valueArr = Object.values(values);
 
 		if (isLoading || valueArr.some((v) => v === '')) {
 			return;
 		}
 
-		try {
-			setIsLoading(true);
-
-			await submitEvent(auth, { ...values });
-
-			navigate('/');
-		} catch (error) {
-			if (error instanceof FirebaseError) {
-				console.log(error.code);
-				setError(errorMsg.Firebase[error.code] || error.message);
-			} else {
-				const e = error as Error;
-				setError(e.message);
-			}
-		} finally {
-			setIsLoading(false);
+		switch (type) {
+			case 'JOIN':
+				if (!join) return;
+				await join({ ...values }, authSuccessCallback);
+				break;
+			case 'LOGIN':
+				if (!loginWithEmail) return;
+				await loginWithEmail({ ...values }, authSuccessCallback);
+				break;
 		}
 	};
 
 	const onGithubClick = async () => {
-		const provider = new GithubAuthProvider();
+		if (!loginWithSocial) return;
 
-		try {
-			setIsLoading(true);
-
-			await signInWithPopup(auth, provider);
-
-			navigate('/');
-		} catch (error) {
-			console.error(error);
-			if (error instanceof FirebaseError) {
-				setError(errorMsg.Firebase[error.code] || error.message);
-			} else {
-				const e = error as Error;
-				setError(e.message);
-			}
-		} finally {
-			setIsLoading(false);
-		}
+		await loginWithSocial('GITHUB', authSuccessCallback);
 	};
 
 	return (

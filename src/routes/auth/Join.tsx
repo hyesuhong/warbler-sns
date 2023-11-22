@@ -1,8 +1,3 @@
-import {
-	Auth,
-	createUserWithEmailAndPassword,
-	updateProfile,
-} from 'firebase/auth';
 import AuthLayout from '../../layouts/AuthLayout';
 
 const Join = () => {
@@ -20,27 +15,7 @@ const Join = () => {
 		},
 	};
 
-	const submitEvent = async (
-		auth: Auth,
-		{ email, password, name }: { [key: string]: string }
-	) => {
-		const credentials = await createUserWithEmailAndPassword(
-			auth,
-			email,
-			password
-		);
-
-		await updateProfile(credentials.user, { displayName: name });
-	};
-
-	return (
-		<AuthLayout
-			type='JOIN'
-			inputs={inputs}
-			submitEvent={submitEvent}
-			switcher={pageSwith}
-		/>
-	);
+	return <AuthLayout type='JOIN' inputs={inputs} switcher={pageSwith} />;
 };
 
 export default Join;

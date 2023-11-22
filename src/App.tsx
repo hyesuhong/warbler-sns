@@ -3,8 +3,10 @@ import { RouterProvider } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import router from './Router';
-import Loading from './components/Loading';
 import { auth } from './firebase';
+import AuthService from './services/auth';
+import AuthProvider from './contexts/AuthContext';
+import Loading from './components/Loading';
 
 const GlobalStyle = createGlobalStyle`
 	${reset}
@@ -28,6 +30,8 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const authService = new AuthService(auth);
+
 function App() {
 	const [isLoading, setIsLoading] = useState(true);
 	const init = async () => {
@@ -42,7 +46,13 @@ function App() {
 	return (
 		<>
 			<GlobalStyle />
-			{isLoading ? <Loading /> : <RouterProvider router={router} />}
+			{isLoading ? (
+				<Loading />
+			) : (
+				<AuthProvider authService={authService}>
+					<RouterProvider router={router} />
+				</AuthProvider>
+			)}
 		</>
 	);
 }

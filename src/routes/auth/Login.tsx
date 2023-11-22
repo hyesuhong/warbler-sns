@@ -1,4 +1,3 @@
-import { Auth, signInWithEmailAndPassword } from 'firebase/auth';
 import AuthLayout from '../../layouts/AuthLayout';
 
 const Login = () => {
@@ -15,21 +14,7 @@ const Login = () => {
 		},
 	};
 
-	const submitEvent = async (
-		auth: Auth,
-		{ email, password }: { [key: string]: string }
-	) => {
-		await signInWithEmailAndPassword(auth, email, password);
-	};
-
-	return (
-		<AuthLayout
-			type='LOGIN'
-			inputs={inputs}
-			submitEvent={submitEvent}
-			switcher={pageSwith}
-		/>
-	);
+	return <AuthLayout type='LOGIN' inputs={inputs} switcher={pageSwith} />;
 };
 
 export default Login;
