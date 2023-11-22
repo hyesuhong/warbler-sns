@@ -15,6 +15,7 @@ export interface authContextValues {
 	join?: joinFn;
 	loginWithEmail?: loginWithEmailFn;
 	loginWithSocial?: loginWithSocialFn;
+	cleanUpState?: voidFn;
 	isLoading?: boolean;
 	error?: string;
 }

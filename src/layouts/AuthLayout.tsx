@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../contexts/AuthContext';
@@ -79,7 +79,14 @@ interface Props {
 
 const AuthLayout = ({ type, inputs, switcher }: Props) => {
 	const navigate = useNavigate();
-	const { join, loginWithEmail, loginWithSocial, isLoading, error } = useAuth();
+	const {
+		join,
+		loginWithEmail,
+		loginWithSocial,
+		cleanUpState,
+		isLoading,
+		error,
+	} = useAuth();
 	const [values, setValues] = useState<Obj>(
 		inputs.reduce<Obj>((acc, input) => {
 			acc[input.name] = input.initial;
@@ -131,6 +138,12 @@ const AuthLayout = ({ type, inputs, switcher }: Props) => {
 
 		await loginWithSocial('GITHUB', authSuccessCallback);
 	};
+
+	useEffect(() => {
+		return () => {
+			cleanUpState && cleanUpState();
+		};
+	}, []);
 
 	return (
 		<>
